@@ -5,10 +5,6 @@ import { styles, bookings } from '#lib/server/db/schema.js';
 import { showDay } from '#lib/moments.js';
 
 export async function load({ locals, url }) {
-	if (locals.user === undefined) {
-		redirect(303, '/login');
-	}
-
 	const date = url.searchParams.get('date');
 	let day = new Date();
 	if (date !== null) {
