@@ -1,4 +1,5 @@
 <script>
+	import { enhance } from '$app/forms';
 	import { showTime } from '#lib/moments.js';
 
 	let { data } = $props();
@@ -23,6 +24,10 @@
 		<div class="mt-4 rounded-lg border border-gray-200 p-4">
 			<p class="font-semibold">{showTime(booking.startsAt)}: {booking.style}</p>
 			<p>{booking.customerName}, {booking.phone}</p>
+			<form method="POST" action={data.date === '' ? '?/cancel' : `?/cancel&date=${data.date}`} use:enhance class="mt-2">
+				<input type="hidden" name="id" value={booking.id} />
+				<button class="rounded border border-gray-300 px-3 py-1 text-sm">Cancel</button>
+			</form>
 		</div>
 	{:else}
 		<p class="mt-4 text-gray-600">No bookings on this day.</p>

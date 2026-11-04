@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { db } from '#lib/server/db/index.js';
 import { styles, bookings } from '#lib/server/db/schema.js';
@@ -28,5 +28,16 @@ export async function load({ locals, url }) {
 		.orderBy(bookings.startsAt);
 	const dayBookings = allBookings.filter((b) => showDay(b.startsAt) === showDay(day));
 
-	return { dayName: showDay(day), bookings: dayBookings };
+	// date goes back to the page, so that the Cancel form can keep the same day in the address.
+	return { dayName: showDay(day), date: date ?? '', bookings: dayBookings };
 }
+
+export const actions = {
+	cancel: async ({ request, locals }) => {
+		if (locals.user === undefined) {
+			error(401, 'Please log in first.');
+		}
+		const formData = await request.formData();
+		await db.delete(bookings).where(eq(bookings.id, Number(formData.get('id'))));
+	}
+};
